@@ -211,7 +211,7 @@ describe("NSed", () => {
         const showOutputSpy = jest.spyOn(NSed, "showOutput").mockImplementation();
 
         await NSed.processFile(path.resolve(__dirname, "../.travis.yml"), [{command: 'crypto.createHash("md5").update($data).digest("hex")'}], true);
-        expect(showOutputSpy).toHaveBeenCalledWith("95870ba188ce747102f0ea9ef02daedb");
+        expect(showOutputSpy).toHaveBeenCalledWith("26ca330f8c039f3377210993fa6183a7");
         showOutputSpy.mockRestore();
       });
 
@@ -234,7 +234,7 @@ describe("NSed", () => {
         expect(showOutputSpy.mock.calls).toEqual([
           ["01abfc750a0c942167651c40d088531d"], ["03803ca124cd46c485e39897ddd312d0"], ["82917d62d59c8a35d9ffd2900a38843f"],
           ["01abfc750a0c942167651c40d088531d"], ["d63532581c6ab0556ce38622538879ed"], ["c0f2435cbc30de330cd0b1968c4cb09e"],
-          ["ae6780a734516ca8a9eeb62e6edbebd5"], ["0aae3e74c4b3bad32db52dc47b11c7c5"], ["fc2f57f6eb83f81676709e391811a199"],
+          ["ae6780a734516ca8a9eeb62e6edbebd5"], ["2303f955cd458c204f725e1da5dad311"], ["fc2f57f6eb83f81676709e391811a199"],
           ["12952e3644d02b0f2dad8a727ce1cc39"]
         ]);
 
@@ -284,7 +284,7 @@ describe("NSed", () => {
         expect(showOutputSpy.mock.calls).toEqual([
           ["01abfc750a0c942167651c40d088531d"], ["03803ca124cd46c485e39897ddd312d0"], ["82917d62d59c8a35d9ffd2900a38843f"],
           ["01abfc750a0c942167651c40d088531d"], ["d63532581c6ab0556ce38622538879ed"], ["c0f2435cbc30de330cd0b1968c4cb09e"],
-          ["ae6780a734516ca8a9eeb62e6edbebd5"], ["0aae3e74c4b3bad32db52dc47b11c7c5"], ["fc2f57f6eb83f81676709e391811a199"],
+          ["ae6780a734516ca8a9eeb62e6edbebd5"], ["2303f955cd458c204f725e1da5dad311"], ["fc2f57f6eb83f81676709e391811a199"],
           ["12952e3644d02b0f2dad8a727ce1cc39"]
         ]);
 
