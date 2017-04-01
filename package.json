@@ -1,6 +1,6 @@
 {
   "name": "nsed",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Javascript Terminal String Editor",
   "main": "index.js",
   "files": [
@@ -48,7 +48,11 @@
   },
   "jest": {
     "collectCoverage": true,
-    "coveragePathIgnorePatterns": ["/node_modules/", "/bin", "/test"],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/bin",
+      "/test"
+    ],
     "coverageReporters": [
       "json",
       "lcov",
