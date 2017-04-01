@@ -1,0 +1,12 @@
+{
+  "extends": "cowtech",
+  "globals": {
+    "describe": true,
+    "test": true,
+    "expect": true,
+    "it": true,
+    "beforeEach": true,
+    "afterEach": true,
+    "jest": true
+  }
+}
