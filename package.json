@@ -9,6 +9,9 @@
     "README.md",
     "CHANGELOG.md"
   ],
+  "bin": {
+    "nsed": "./bin/nsed"
+  },
   "scripts": {
     "test": "./node_modules/.bin/jest",
     "test-watch": "./node_modules/.bin/jest --watch",
