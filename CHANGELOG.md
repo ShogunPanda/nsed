@@ -1,3 +1,6 @@
+### 2018-04-22 / 1.0.4
+
+
 ### 2018-04-22 / 1.0.3
 
 * Updated license links and badges.
