@@ -1,3 +1,7 @@
+### 2021-01-03 / 2.0.1
+
+- chore: Updated linter config.
+
 ### 2021-01-03 / 2.0.0
 
 - feat: Full rewrite in TypeScript.
