@@ -1,12 +1,7 @@
 {
-  "extends": "cowtech",
-  "globals": {
-    "describe": true,
-    "test": true,
-    "expect": true,
-    "it": true,
-    "beforeEach": true,
-    "afterEach": true,
-    "jest": true
-  }
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "tsconfig.test.json"
+  },
+  "extends": ["@cowtech/eslint-config/typescript"]
 }

@@ -1,22 +1,19 @@
 #!/usr/bin/env node
 
-/*
- * This file is part of the nsed npm package. Copyright (C) 2017 and above Shogun <shogun@cowtech.it>.
- * Licensed under the MIT license, which can be found at https://choosealicense.com/licenses/mit.
- */
+const { execute } = require('../lib')
 
-const nsed = require("..");
+function failureHandler(error) {
+  let message = error
 
-const failureHandler = function(error){
-  let message = error;
+  if (error.code === 'ENSED') {
+    message = error.message
+  }
 
-  if(error.code === "ENSED")
-    message = error.message;
+  console.error(message)
+  process.exit(1)
+}
 
-  console.error(message);
-  process.exit(1); // eslint-disable-line no-process-exit
-};
+process.on('unhandledRejection', failureHandler)
+process.on('uncaughtException', failureHandler)
 
-process.on("unhandledRejection", failureHandler);
-process.on("uncaughtException", failureHandler);
-nsed.execute(process.argv).catch(failureHandler);
+execute(process.argv).catch(failureHandler)
