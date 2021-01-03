@@ -1,3 +1,8 @@
+### 2021-01-03 / 2.0.0
+
+- feat: Full rewrite in TypeScript.
+- chore: Use NPM for locking.
+
 ### 2018-04-22 / 1.0.4
 
 
