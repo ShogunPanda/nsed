@@ -7,6 +7,11 @@ export interface Args {
   encoding: string
 }
 
+export interface PackageInfo {
+  version: string
+  description: string
+}
+
 export type ImportedFunction = ($data: string, $index: number) => string
 
 export type CommandType = 'command' | 'function' | 'filter' | 'reverseFilter'

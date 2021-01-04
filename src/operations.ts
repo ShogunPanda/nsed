@@ -2,12 +2,17 @@ import { basename, resolve } from 'path'
 import { Command, CommandType, ImportedFunction, NSedError } from './models'
 import { showOutput } from './output'
 
-export function parseCommand(type: CommandType, command: string): Command {
+export async function parseCommand(type: CommandType, command: string): Promise<Command> {
   // Parse the command
   if (type === 'function') {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const commandFunction = require(resolve(process.cwd(), command))
+      let commandFunction = await import(resolve(process.cwd(), command))
+
+      /* instabul ignore if */
+      if (commandFunction.default) {
+        // CJS/MJS inteoperability
+        commandFunction = commandFunction.default
+      }
 
       if (typeof commandFunction !== 'function') {
         throw new NSedError(`File "${command}" must export a function.`)
@@ -32,7 +37,7 @@ export function parseCommand(type: CommandType, command: string): Command {
   return { type, command }
 }
 
-export function requireModule(modulePath: string): void {
+export async function requireModule(modulePath: string): Promise<void> {
   // Camelcase the module
   const moduleName = basename(modulePath)
     .toLowerCase()
@@ -40,7 +45,7 @@ export function requireModule(modulePath: string): void {
     .replace(/(?:[\/-_\.])([a-z0-9])/, (_: string, t: string) => t.toUpperCase())
 
   try {
-    Object.assign(global, { [moduleName]: require(modulePath) })
+    Object.assign(global, { [moduleName]: await import(modulePath) })
   } catch (e) {
     throw new NSedError(`Cannot find module "${modulePath}".`)
   }

@@ -1,17 +1,18 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.executeCommands = exports.requireModule = exports.parseCommand = void 0;
-const path_1 = require("path");
-const models_1 = require("./models");
-const output_1 = require("./output");
-function parseCommand(type, command) {
+import { basename, resolve } from 'path';
+import { NSedError } from "./models.mjs";
+import { showOutput } from "./output.mjs";
+export async function parseCommand(type, command) {
     // Parse the command
     if (type === 'function') {
         try {
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
-            const commandFunction = require(path_1.resolve(process.cwd(), command));
+            let commandFunction = await import(resolve(process.cwd(), command));
+            /* instabul ignore if */
+            if (commandFunction.default) {
+                // CJS/MJS inteoperability
+                commandFunction = commandFunction.default;
+            }
             if (typeof commandFunction !== 'function') {
-                throw new models_1.NSedError(`File "${command}" must export a function.`);
+                throw new NSedError(`File "${command}" must export a function.`);
             }
             return { type: 'function', command: commandFunction };
         }
@@ -19,7 +20,7 @@ function parseCommand(type, command) {
             if (error.code === 'ENSED') {
                 throw error;
             }
-            throw new models_1.NSedError(`Cannot require file "${command}".`);
+            throw new NSedError(`Cannot require file "${command}".`);
         }
     }
     else if (command.startsWith('.') || command.startsWith('[')) {
@@ -33,23 +34,21 @@ function parseCommand(type, command) {
     }
     return { type, command };
 }
-exports.parseCommand = parseCommand;
-function requireModule(modulePath) {
+export async function requireModule(modulePath) {
     // Camelcase the module
-    const moduleName = path_1.basename(modulePath)
+    const moduleName = basename(modulePath)
         .toLowerCase()
         // eslint-disable-next-line no-useless-escape
         .replace(/(?:[\/-_\.])([a-z0-9])/, (_, t) => t.toUpperCase());
     try {
-        Object.assign(global, { [moduleName]: require(modulePath) });
+        Object.assign(global, { [moduleName]: await import(modulePath) });
     }
     catch (e) {
-        throw new models_1.NSedError(`Cannot find module "${modulePath}".`);
+        throw new NSedError(`Cannot find module "${modulePath}".`);
     }
 }
-exports.requireModule = requireModule;
 // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-async function executeCommands($data, $index, commands) {
+export async function executeCommands($data, $index, commands) {
     // Apply all commands
     for (const cmd of commands) {
         const { type, command } = cmd;
@@ -75,9 +74,8 @@ async function executeCommands($data, $index, commands) {
             }
         }
         catch (error) {
-            throw new models_1.NSedError(`Invalid command "${command}": [${error.name}] ${error.message}.`);
+            throw new NSedError(`Invalid command "${command}": [${error.name}] ${error.message}.`);
         }
     }
-    return output_1.showOutput($data);
+    return showOutput($data);
 }
-exports.executeCommands = executeCommands;

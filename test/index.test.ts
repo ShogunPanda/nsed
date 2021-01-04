@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
+import { readFileSync } from 'fs'
 import { resolve } from 'path'
 import { SinonSpyCall, stub } from 'sinon'
 import t from 'tap'
@@ -9,6 +10,7 @@ import { requireModule } from '../src/operations'
 
 type Test = typeof t
 
+const packageInfo = JSON.parse(readFileSync(resolve(__dirname, '../package.json'), 'utf-8'))
 const dataFile = resolve(__dirname, './fixtures/data.txt')
 
 t.test('NSed execution', (t: Test) => {
@@ -85,7 +87,10 @@ t.test('NSed execution', (t: Test) => {
     t.test('should correctly process line by line', async (t: Test) => {
       logStub.reset()
 
-      await execute(`node index.js -i ${dataFile} -c crypto.createHash("sha1").update($data).digest("hex")`.split(' '))
+      await execute(
+        `node index.js -i ${dataFile} -c crypto.createHash("sha1").update($data).digest("hex")`.split(' '),
+        packageInfo
+      )
 
       t.same(
         logStub.getCalls().map((m: SinonSpyCall) => m.args),
@@ -103,7 +108,8 @@ t.test('NSed execution', (t: Test) => {
       logStub.reset()
 
       await execute(
-        `node index.js -w -i ${dataFile} -c crypto.createHash("sha1").update($data).digest("hex")`.split(' ')
+        `node index.js -w -i ${dataFile} -c crypto.createHash("sha1").update($data).digest("hex")`.split(' '),
+        packageInfo
       )
 
       t.same(
@@ -116,7 +122,8 @@ t.test('NSed execution', (t: Test) => {
       logStub.reset()
 
       await execute(
-        `node index.js -w -i ${dataFile} -c crypto.createHash("whatever").update($data).digest("hex")`.split(' ')
+        `node index.js -w -i ${dataFile} -c crypto.createHash("whatever").update($data).digest("hex")`.split(' '),
+        packageInfo
       )
 
       t.same(
@@ -134,7 +141,7 @@ t.test('NSed execution', (t: Test) => {
     t.test('should return the original content if no commands are provided', async (t: Test) => {
       logStub.reset()
 
-      await execute(`node index.js -i ${dataFile}`.split(' '))
+      await execute(`node index.js -i ${dataFile}`.split(' '), packageInfo)
 
       t.same(
         logStub.getCalls().map((m: SinonSpyCall) => m.args),
@@ -143,7 +150,7 @@ t.test('NSed execution', (t: Test) => {
 
       logStub.reset()
 
-      await execute(`node index.js -w -i ${dataFile}`.split(' '))
+      await execute(`node index.js -w -i ${dataFile}`.split(' '), packageInfo)
 
       t.same(
         logStub.getCalls().map((m: SinonSpyCall) => m.args),
@@ -155,7 +162,8 @@ t.test('NSed execution', (t: Test) => {
       logStub.reset()
 
       await execute(
-        `node index.js -i ${dataFile} -f $index>2 -c crypto.createHash("sha1").update($data).digest("hex")`.split(' ')
+        `node index.js -i ${dataFile} -f $index>2 -c crypto.createHash("sha1").update($data).digest("hex")`.split(' '),
+        packageInfo
       )
 
       t.same(
@@ -171,7 +179,7 @@ t.test('NSed execution', (t: Test) => {
     t.test('should use user-defined functions', async (t: Test) => {
       logStub.reset()
 
-      await execute(`node index.js -i ${dataFile} -s test/fixtures/function.js`.split(' '))
+      await execute(`node index.js -i ${dataFile} -s test/fixtures/function.js`.split(' '), packageInfo)
 
       t.same(
         logStub.getCalls().map((m: SinonSpyCall) => m.args),
@@ -182,7 +190,7 @@ t.test('NSed execution', (t: Test) => {
     t.test('should require Node modules', async (t: Test) => {
       logStub.reset()
 
-      await execute(`node index.js -i ${dataFile} -r path -c path.resolve('/a',$data)`.split(' '))
+      await execute(`node index.js -i ${dataFile} -r path -c path.resolve('/a',$data)`.split(' '), packageInfo)
 
       t.same(
         logStub.getCalls().map((m: SinonSpyCall) => m.args),

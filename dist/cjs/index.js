@@ -11,10 +11,8 @@ const pump_1 = __importDefault(require("pump"));
 const split2_1 = __importDefault(require("split2"));
 const operations_1 = require("./operations");
 const output_1 = require("./output");
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const packageInfo = require('../package.json');
-function addCommand(commands, type, command) {
-    commands.push(operations_1.parseCommand(type, command));
+async function addCommand(commands, type, command) {
+    commands.push(await operations_1.parseCommand(type, command));
 }
 async function processData(input, encoding, whole, commands) {
     let stream = process.stdin;
@@ -62,7 +60,7 @@ async function processData(input, encoding, whole, commands) {
     });
 }
 exports.processData = processData;
-function execute(args) {
+function execute(args, { version, description }) {
     let promiseResolve;
     const promise = new Promise((resolve) => {
         promiseResolve = resolve;
@@ -72,9 +70,9 @@ function execute(args) {
     // Parse input
     cli
         .storeOptionsAsProperties(false)
-        .version(packageInfo.version, '-v, --version', 'Shows the version.')
+        .version(version, '-v, --version', 'Shows the version.')
         .usage('[options]')
-        .description(packageInfo.description)
+        .description(description)
         .option('-i, --input <FILE>', 'File to read instead of using standard input.')
         .option('-w, --whole', 'Consider the input a single string instead of processing it line by line.')
         .option('-r, --require <MODULE>', 'Require a module before processing. The module will be available with its name camelcased.', operations_1.requireModule)

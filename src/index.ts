@@ -3,15 +3,12 @@ import { createReadStream, ReadStream } from 'fs'
 import getStream from 'get-stream'
 import pump from 'pump'
 import split2 from 'split2'
-import { Args, Command, CommandType, PromiseRejecter, PromiseResolver } from './models'
+import { Args, Command, CommandType, PackageInfo, PromiseRejecter, PromiseResolver } from './models'
 import { executeCommands, parseCommand, requireModule } from './operations'
 import { handleError } from './output'
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const packageInfo = require('../package.json')
-
-function addCommand(commands: Array<Command>, type: CommandType, command: string): void {
-  commands.push(parseCommand(type, command))
+async function addCommand(commands: Array<Command>, type: CommandType, command: string): Promise<void> {
+  commands.push(await parseCommand(type, command))
 }
 
 export async function processData(
@@ -75,7 +72,7 @@ export async function processData(
   })
 }
 
-export function execute(args: Array<string>): Promise<void> {
+export function execute(args: Array<string>, { version, description }: PackageInfo): Promise<void> {
   let promiseResolve: PromiseResolver
 
   const promise = new Promise((resolve: PromiseResolver) => {
@@ -88,9 +85,9 @@ export function execute(args: Array<string>): Promise<void> {
   // Parse input
   cli
     .storeOptionsAsProperties(false)
-    .version(packageInfo.version, '-v, --version', 'Shows the version.')
+    .version(version, '-v, --version', 'Shows the version.')
     .usage('[options]')
-    .description(packageInfo.description)
+    .description(description)
     .option('-i, --input <FILE>', 'File to read instead of using standard input.')
     .option('-w, --whole', 'Consider the input a single string instead of processing it line by line.')
     .option(

@@ -5,6 +5,10 @@ export interface Args {
     whole: boolean;
     encoding: string;
 }
+export interface PackageInfo {
+    version: string;
+    description: string;
+}
 export declare type ImportedFunction = ($data: string, $index: number) => string;
 export declare type CommandType = 'command' | 'function' | 'filter' | 'reverseFilter';
 export interface Command {

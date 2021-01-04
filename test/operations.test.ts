@@ -19,70 +19,66 @@ t.test('NSed operations', (t: Test) => {
   })
 
   t.test('parseCommand', (t: Test) => {
-    t.test('should return the right command', (t: Test) => {
-      t.same(parseCommand('command', '.foo'), {
+    t.test('should return the right command', async (t: Test) => {
+      t.same(await parseCommand('command', '.foo'), {
         type: 'command',
         command: '$data.foo'
       })
 
-      t.same(parseCommand('command', '[2]'), {
+      t.same(await parseCommand('command', '[2]'), {
         type: 'command',
         command: '$data[2]'
       })
 
-      t.same(parseCommand('command', '[whatever]'), {
+      t.same(await parseCommand('command', '[whatever]'), {
         type: 'command',
         command: '$data[whatever]'
       })
 
-      t.same(parseCommand('command', '/^\\d/'), {
+      t.same(await parseCommand('command', '/^\\d/'), {
         type: 'command',
         command: '$data.toString().match(/^\\d/)'
       })
 
-      t.same(parseCommand('command', '$1'), {
+      t.same(await parseCommand('command', '$1'), {
         type: 'command',
         command: 'RegExp.$1'
       })
 
-      t.same(parseCommand('command', 'foo'), {
+      t.same(await parseCommand('command', 'foo'), {
         type: 'command',
         command: 'foo'
       })
 
-      t.same(parseCommand('filter', '$1'), {
+      t.same(await parseCommand('filter', '$1'), {
         type: 'filter',
         command: 'RegExp.$1'
       })
 
-      t.same(parseCommand('reverseFilter', '$1'), {
+      t.same(await parseCommand('reverseFilter', '$1'), {
         type: 'reverseFilter',
         command: 'RegExp.$1'
       })
 
-      const imported = parseCommand('function', resolve(__dirname, 'fixtures/function.js'))
+      const imported = await parseCommand('function', resolve(__dirname, 'fixtures/function.js'))
       t.equal(imported.type, 'function')
       t.type(imported.command, Function)
 
-      t.throw(() => parseCommand('function', __filename), new NSedError(`File "${__filename}" must export a function.`))
+      t.rejects(parseCommand('function', __filename), new NSedError(`File "${__filename}" must export a function.`))
 
-      t.throw(() => parseCommand('function', '/foo'), new NSedError('Cannot require file "/foo".'))
-
-      t.end()
+      t.rejects(parseCommand('function', '/foo'), new NSedError('Cannot require file "/foo".'))
     })
 
     t.end()
   })
 
   t.test('.requireModule', (t: Test) => {
-    t.test('should require a module and make it available in the global scope', (t: Test) => {
+    t.test('should require a module and make it available in the global scope', async (t: Test) => {
       t.type((global as any).stringDecoder, 'undefined')
-      requireModule('string_decoder')
+      await requireModule('string_decoder')
       t.type((global as any).stringDecoder, 'object')
 
-      t.throw(() => requireModule('foo'), new NSedError('Cannot find module "foo".'))
-
-      t.end()
+      t.rejects(requireModule('foo'), new NSedError('Cannot find module "foo".'))
     })
 
     t.end()
