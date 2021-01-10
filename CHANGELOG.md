@@ -1,3 +1,7 @@
+### 2021-01-10 / 2.1.2
+
+- feat: Use defineProperty for required modules.
+
 ### 2021-01-10 / 2.1.1
 
 - chore: Use globalThis instead of global.
