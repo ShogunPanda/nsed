@@ -64,7 +64,7 @@ async function requireModule(modulePath) {
         // eslint-disable-next-line no-useless-escape
         .replace(/(?:[\/-_\.])([a-z0-9])/, (_, t) => t.toUpperCase());
     try {
-        Object.assign(globalThis, { [moduleName]: await Promise.resolve().then(() => __importStar(require(modulePath))) });
+        Object.defineProperty(globalThis, moduleName, { value: await Promise.resolve().then(() => __importStar(require(modulePath))) });
     }
     catch (e) {
         throw new models_1.NSedError(`Cannot find module "${modulePath}".`);

@@ -45,7 +45,7 @@ export async function requireModule(modulePath: string): Promise<void> {
     .replace(/(?:[\/-_\.])([a-z0-9])/, (_: string, t: string) => t.toUpperCase())
 
   try {
-    Object.assign(globalThis, { [moduleName]: await import(modulePath) })
+    Object.defineProperty(globalThis, moduleName, { value: await import(modulePath) })
   } catch (e) {
     throw new NSedError(`Cannot find module "${modulePath}".`)
   }
