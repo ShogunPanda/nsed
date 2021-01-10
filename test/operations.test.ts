@@ -74,9 +74,9 @@ t.test('NSed operations', (t: Test) => {
 
   t.test('.requireModule', (t: Test) => {
     t.test('should require a module and make it available in the global scope', async (t: Test) => {
-      t.type((global as any).stringDecoder, 'undefined')
+      t.type((globalThis as any).stringDecoder, 'undefined')
       await requireModule('string_decoder')
-      t.type((global as any).stringDecoder, 'object')
+      t.type((globalThis as any).stringDecoder, 'object')
 
       t.rejects(requireModule('foo'), new NSedError('Cannot find module "foo".'))
     })
