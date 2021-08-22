@@ -1,3 +1,7 @@
+### 2021-08-22 / 3.0.0-beta.0
+
+- feat: Only export as ESM.
+
 ### 2021-01-10 / 2.1.2
 
 - feat: Use defineProperty for required modules.
