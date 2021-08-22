@@ -8,7 +8,6 @@ export async function parseCommand(type: CommandType, command: string): Promise<
     try {
       let commandFunction = await import(resolve(process.cwd(), command))
 
-      /* instabul ignore if */
       if (commandFunction.default) {
         // CJS/MJS inteoperability
         commandFunction = commandFunction.default

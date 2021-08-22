@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
-import { SinonSpyCall, stub } from 'sinon'
+import sinon, { SinonSpyCall } from 'sinon'
 import t from 'tap'
 import { NSedError } from '../src/models'
 import { handleError, showOutput } from '../src/output'
@@ -14,11 +14,11 @@ function createError(code: string, message: string = 'MESSAGE'): NSedError {
 }
 
 t.test('NSed output', (t: Test) => {
-  const logStub = stub(console, 'log')
-  const errorStub = stub(console, 'error')
-  const processStub = stub(process, 'exit')
+  const logStub = sinon.stub(console, 'log')
+  const errorStub = sinon.stub(console, 'error')
+  const processStub = sinon.stub(process, 'exit')
 
-  t.tearDown(() => {
+  t.teardown(() => {
     logStub.restore()
     errorStub.restore()
     processStub.restore()
@@ -53,7 +53,7 @@ t.test('NSed output', (t: Test) => {
       handleError(createError('EACCES', 'REASON'), 'FILE', true)
       t.equal(errorStub.firstCall.args[0], 'Cannot open file FILE: permission denied.')
 
-      t.throw(() => handleError(new Error('ERROR')), new Error('ERROR'))
+      t.throws(() => handleError(new Error('ERROR')), new Error('ERROR'))
 
       t.end()
     })

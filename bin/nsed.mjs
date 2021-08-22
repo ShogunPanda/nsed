@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 
-const { readFileSync } = require('fs')
-const { resolve } = require('path')
-const { execute } = require('../dist/cjs')
+import { readFileSync } from 'fs'
+import { execute } from '../dist/index.js'
 
 function failureHandler(error) {
   let message = error
@@ -18,4 +17,4 @@ function failureHandler(error) {
 process.on('unhandledRejection', failureHandler)
 process.on('uncaughtException', failureHandler)
 
-execute(process.argv, JSON.parse(readFileSync(resolve(__dirname, '../package.json'), 'utf-8'))).catch(failureHandler)
+execute(process.argv, JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf-8'))).catch(failureHandler)

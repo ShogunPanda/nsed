@@ -14,7 +14,7 @@ It works similarly to the standard GNU sed command, with the exception that ever
 For instance, the following command computes the hash of each file in the test folder:
 
 ```bash
-find test -type f | nsed -r crypto -c 'fs.readFileSync($data, "utf8")' -c 'crypto.createHash("md5").update($data).digest("hex")'
+find test -type f | nsed -r fs -r crypto -c 'fs.readFileSync($data, "utf8")' -c 'crypto.createHash("md5").update($data).digest("hex")'
 ```
 
 ## Installation
@@ -34,7 +34,7 @@ Each command is executed on the output of the previous one. You can reference `$
 If operating directly on properties or methods of the input, you can omit `$data`.
 
 ```bash
-find test -type f | nsed -r crypto -c 'fs.readFileSync($data, "utf8")' -c '.length'
+find test -type f | nsed -r fs -c 'fs.readFileSync($data, "utf8")' -c '.length'
 ```
 
 To see all the available options, use `-h|--help` option.

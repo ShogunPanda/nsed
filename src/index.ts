@@ -3,7 +3,7 @@ import { createReadStream, ReadStream } from 'fs'
 import getStream from 'get-stream'
 import pump from 'pump'
 import split2 from 'split2'
-import { Args, Command, CommandType, PackageInfo, PromiseRejecter, PromiseResolver } from './models'
+import { Command, CommandType, PackageInfo, PromiseRejecter, PromiseResolver } from './models'
 import { executeCommands, parseCommand, requireModule } from './operations'
 import { handleError } from './output'
 
@@ -13,14 +13,13 @@ async function addCommand(commands: Array<Command>, type: CommandType, command: 
 
 export async function processData(
   input: string,
-  encoding: string,
+  encoding: BufferEncoding,
   whole: boolean,
   commands: Array<Command>
 ): Promise<void> {
-  let stream: ReadStream = (process.stdin as unknown) as ReadStream
+  let stream: ReadStream = process.stdin as unknown as ReadStream
 
   // Open the file if not processing stdin
-  /* istanbul ignore else */
   if (input) {
     stream = createReadStream(input, encoding)
   }
@@ -118,7 +117,7 @@ export function execute(args: Array<string>, { version, description }: PackageIn
     .option('-e, --encoding <ENCODING>', 'The encoding to use.', 'utf8')
     .parse(args)
 
-  const { input, encoding, whole } = cli.opts() as Args
+  const { input, encoding, whole } = cli.opts()
 
   processData(input, encoding, whole, commands)
     .catch((e: Error) => {

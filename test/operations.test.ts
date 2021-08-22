@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
-import { resolve } from 'path'
-import { stub } from 'sinon'
+import sinon from 'sinon'
 import t from 'tap'
 import { NSedError } from '../src/models'
 import { executeCommands, parseCommand, requireModule } from '../src/operations'
@@ -9,11 +8,11 @@ import { executeCommands, parseCommand, requireModule } from '../src/operations'
 type Test = typeof t
 
 t.test('NSed operations', (t: Test) => {
-  const logStub = stub(console, 'log')
-  const errorStub = stub(console, 'error')
+  const logStub = sinon.stub(console, 'log')
+  const errorStub = sinon.stub(console, 'error')
   requireModule('crypto')
 
-  t.tearDown(() => {
+  t.teardown(() => {
     logStub.restore()
     errorStub.restore()
   })
@@ -60,11 +59,15 @@ t.test('NSed operations', (t: Test) => {
         command: 'RegExp.$1'
       })
 
-      const imported = await parseCommand('function', resolve(__dirname, 'fixtures/function.js'))
+      const fileName = import.meta.url.toString().replace('file://', '')
+      const imported = await parseCommand(
+        'function',
+        new URL('./fixtures/function.cjs', import.meta.url).toString().replace('file://', '')
+      )
       t.equal(imported.type, 'function')
       t.type(imported.command, Function)
 
-      t.rejects(parseCommand('function', __filename), new NSedError(`File "${__filename}" must export a function.`))
+      t.rejects(parseCommand('function', fileName), new NSedError(`File "${fileName}" must export a function.`))
 
       t.rejects(parseCommand('function', '/foo'), new NSedError('Cannot require file "/foo".'))
     })

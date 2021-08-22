@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
 import { readFileSync } from 'fs'
-import { resolve } from 'path'
-import { SinonSpyCall, stub } from 'sinon'
+import sinon, { SinonSpyCall } from 'sinon'
 import t from 'tap'
 import { execute, processData } from '../src/index'
 import { NSedError } from '../src/models'
@@ -10,16 +9,16 @@ import { requireModule } from '../src/operations'
 
 type Test = typeof t
 
-const packageInfo = JSON.parse(readFileSync(resolve(__dirname, '../package.json'), 'utf-8'))
-const dataFile = resolve(__dirname, './fixtures/data.txt')
+const packageInfo = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf-8'))
+const dataFile = new URL('./fixtures/data.txt', import.meta.url).toString().replace('file://', '')
 
 t.test('NSed execution', (t: Test) => {
-  const logStub = stub(console, 'log')
-  const errorStub = stub(console, 'error')
-  const processStub = stub(process, 'exit')
+  const logStub = sinon.stub(console, 'log')
+  const errorStub = sinon.stub(console, 'error')
+  const processStub = sinon.stub(process, 'exit')
   requireModule('crypto')
 
-  t.tearDown(() => {
+  t.teardown(() => {
     logStub.restore()
     errorStub.restore()
     processStub.restore()
@@ -42,7 +41,7 @@ t.test('NSed execution', (t: Test) => {
 
       t.test('should handle open errors', async (t: Test) => {
         t.rejects(
-          processData(resolve(__dirname, '/not-existing'), 'utf-8', true, [{ type: 'command', command: '$data' }]),
+          processData('/not-existing', 'utf-8', true, [{ type: 'command', command: '$data' }]),
           new NSedError('Cannot open file /not-existing: file not found.')
         )
       })
@@ -72,7 +71,7 @@ t.test('NSed execution', (t: Test) => {
 
       t.test('should handle open errors', async (t: Test) => {
         t.rejects(
-          processData(resolve(__dirname, '/not-existing'), 'utf-8', false, [{ type: 'command', command: '$data' }]),
+          processData('/not-existing', 'utf-8', false, [{ type: 'command', command: '$data' }]),
           new NSedError('Cannot open file /not-existing: file not found.')
         )
       })
@@ -179,7 +178,7 @@ t.test('NSed execution', (t: Test) => {
     t.test('should use user-defined functions', async (t: Test) => {
       logStub.reset()
 
-      await execute(`node index.js -i ${dataFile} -s test/fixtures/function.js`.split(' '), packageInfo)
+      await execute(`node index.js -i ${dataFile} -s test/fixtures/function.cjs`.split(' '), packageInfo)
 
       t.same(
         logStub.getCalls().map((m: SinonSpyCall) => m.args),
