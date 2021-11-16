@@ -68,6 +68,12 @@ its name camelcased. For instance, `-r string_decoder` will make `stringDecoder`
 Finally, instead of providing commands via command line, you can input Javascript file using `-s|--source` switch. The source file must export a function which
 accepts a string (`$data` representing the current line) and a number (`$index`, representing the current line in the input).
 
+## ESM Only
+
+This package only supports to be directly imported in a ESM context.
+
+For informations on how to use it in a CommonJS context, please check [this page](https://gist.github.com/ShogunPanda/fe98fd23d77cdfb918010dbc42f4504d).
+
 ## Contributing to nsed
 
 - Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet.
