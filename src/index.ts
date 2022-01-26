@@ -42,7 +42,7 @@ export async function processData(
     let index = 0
 
     // Split the stream
-    const pipe = pump(stream, split2('\n'), (err?) => {
+    const pipe = pump(stream, split2('\n'), err => {
       if (err) {
         reject(err)
       }
