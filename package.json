@@ -1,6 +1,6 @@
 {
   "name": "nsed",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "Javascript Terminal String Editor",
   "homepage": "https://sw.cowtech.it/nsed",
   "repository": "github:ShogunPanda/nsed",
@@ -48,8 +48,8 @@
     "split2": "^3.2.2"
   },
   "devDependencies": {
-    "@cowtech/eslint-config": "^7.14.5",
-    "@cowtech/esm-package-utils": "^0.9.1",
+    "@cowtech/eslint-config": "^8.0.1",
+    "@cowtech/esm-package-utils": "^0.9.3",
     "@types/node": "^16.6.1",
     "@types/pump": "^1.1.1",
     "@types/sinon": "^10.0.2",

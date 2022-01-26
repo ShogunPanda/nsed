@@ -1,3 +1,9 @@
+### 2022-01-26 / 3.0.3
+
+- chore: Migrated to ESLint 8.x.x. and removed useless type annotations.
+- chore: Updated dependencies.
+- chore: Removed useless file.
+
 ### 2021-11-17 / 3.0.2
 
 
