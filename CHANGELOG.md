@@ -1,3 +1,7 @@
+### 2022-01-26 / 3.0.6
+
+- chore: Linted code.
+
 ### 2022-01-26 / 3.0.5
 
 - chore: Updated dependencies.
