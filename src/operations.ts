@@ -41,7 +41,7 @@ export async function requireModule(modulePath: string): Promise<void> {
   const moduleName = basename(modulePath)
     .toLowerCase()
     // eslint-disable-next-line no-useless-escape
-    .replace(/(?:[\/-_\.])([a-z0-9])/, (_: string, t: string) => t.toUpperCase())
+    .replace(/(?:[\/-_\.])([a-z0-9])/, (_, t) => t.toUpperCase())
 
   try {
     Object.defineProperty(globalThis, moduleName, { value: await import(modulePath) })
@@ -50,7 +50,6 @@ export async function requireModule(modulePath: string): Promise<void> {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-invalid-void-type
 export async function executeCommands($data: string, $index: number, commands: Array<Command>): Promise<void> {
   // Apply all commands
   for (const cmd of commands) {

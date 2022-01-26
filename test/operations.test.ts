@@ -5,9 +5,7 @@ import t from 'tap'
 import { NSedError } from '../src/models'
 import { executeCommands, parseCommand, requireModule } from '../src/operations'
 
-type Test = typeof t
-
-t.test('NSed operations', (t: Test) => {
+t.test('NSed operations', t => {
   const logStub = sinon.stub(console, 'log')
   const errorStub = sinon.stub(console, 'error')
   requireModule('crypto')
@@ -17,8 +15,8 @@ t.test('NSed operations', (t: Test) => {
     errorStub.restore()
   })
 
-  t.test('parseCommand', (t: Test) => {
-    t.test('should return the right command', async (t: Test) => {
+  t.test('parseCommand', t => {
+    t.test('should return the right command', async t => {
       t.same(await parseCommand('command', '.foo'), {
         type: 'command',
         command: '$data.foo'
@@ -75,8 +73,8 @@ t.test('NSed operations', (t: Test) => {
     t.end()
   })
 
-  t.test('.requireModule', (t: Test) => {
-    t.test('should require a module and make it available in the global scope', async (t: Test) => {
+  t.test('.requireModule', t => {
+    t.test('should require a module and make it available in the global scope', async t => {
       t.type((globalThis as any).stringDecoder, 'undefined')
       await requireModule('string_decoder')
       t.type((globalThis as any).stringDecoder, 'object')
@@ -87,8 +85,8 @@ t.test('NSed operations', (t: Test) => {
     t.end()
   })
 
-  t.test('.executeCommand', (t: Test) => {
-    t.test('should correctly execute commands', async (t: Test) => {
+  t.test('.executeCommand', t => {
+    t.test('should correctly execute commands', async t => {
       logStub.reset()
 
       await executeCommands('abc', 0, [
@@ -99,18 +97,18 @@ t.test('NSed operations', (t: Test) => {
       t.equal(logStub.firstCall.args[0], 'b0')
     })
 
-    t.test('should correctly execute functions', async (t: Test) => {
+    t.test('should correctly execute functions', async t => {
       logStub.reset()
 
       await executeCommands('abc', 0, [
-        { type: 'function', command: ($data: string) => $data[1] },
+        { type: 'function', command: $data => $data[1] },
         { type: 'command', command: '$data + $index' }
       ])
 
       t.equal(logStub.firstCall.args[0], 'b0')
     })
 
-    t.test('should correctly handle filters', async (t: Test) => {
+    t.test('should correctly handle filters', async t => {
       logStub.reset()
 
       await executeCommands('abc', 1, [{ type: 'filter', command: '$index < 2' }])
@@ -121,7 +119,7 @@ t.test('NSed operations', (t: Test) => {
       t.equal(logStub.callCount, 0)
     })
 
-    t.test('should correctly handle reverse filters', async (t: Test) => {
+    t.test('should correctly handle reverse filters', async t => {
       logStub.reset()
 
       await executeCommands('abc', 1, [{ type: 'reverseFilter', command: '$index < 2' }])
@@ -131,7 +129,7 @@ t.test('NSed operations', (t: Test) => {
       t.equal(logStub.firstCall.args[0], 'abc')
     })
 
-    t.test('should handle errors', async (t: Test) => {
+    t.test('should handle errors', t => {
       errorStub.reset()
 
       t.rejects(

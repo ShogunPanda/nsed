@@ -3,7 +3,7 @@ import { createReadStream, ReadStream } from 'fs'
 import getStream from 'get-stream'
 import pump from 'pump'
 import split2 from 'split2'
-import { Command, CommandType, PackageInfo, PromiseRejecter, PromiseResolver } from './models'
+import { Command, CommandType, PackageInfo, PromiseResolver } from './models'
 import { executeCommands, parseCommand, requireModule } from './operations'
 import { handleError } from './output'
 
@@ -26,7 +26,7 @@ export async function processData(
 
   // If whole, get the entire stream contents and process as single line
   if (whole) {
-    let contents: string = ''
+    let contents = ''
 
     try {
       contents = await getStream(stream)
@@ -38,11 +38,11 @@ export async function processData(
   }
 
   // Process line by line using split2
-  return new Promise((resolve: PromiseResolver, reject: PromiseRejecter) => {
+  return new Promise<void>((resolve, reject) => {
     let index = 0
 
     // Split the stream
-    const pipe = pump(stream, split2('\n'), (err?: Error) => {
+    const pipe = pump(stream, split2('\n'), (err?) => {
       if (err) {
         reject(err)
       }
@@ -51,7 +51,7 @@ export async function processData(
     }) as ReadStream
 
     // For each line
-    pipe.on('data', (line: string) => {
+    pipe.on('data', line => {
       // Allow promises to finish before resuming
       pipe.pause()
 
@@ -59,14 +59,14 @@ export async function processData(
       index++
 
       // Process line and then resume the pipe
-      executeCommands(line, index, commands)
+      executeCommands(line.toString('utf-8'), index, commands)
         .then(() => pipe.resume())
         .catch(handleError)
     })
 
     // Start processing
     pipe.resume()
-  }).catch((e: Error) => {
+  }).catch(e => {
     handleError(e, input)
   })
 }
@@ -74,7 +74,7 @@ export async function processData(
 export function execute(args: Array<string>, { version, description }: PackageInfo): Promise<void> {
   let promiseResolve: PromiseResolver
 
-  const promise = new Promise((resolve: PromiseResolver) => {
+  const promise = new Promise<void>(resolve => {
     promiseResolve = resolve
   })
 
@@ -120,7 +120,7 @@ export function execute(args: Array<string>, { version, description }: PackageIn
   const { input, encoding, whole } = cli.opts()
 
   processData(input, encoding, whole, commands)
-    .catch((e: Error) => {
+    .catch(e => {
       handleError(e, input, true)
     })
     .finally(promiseResolve!)

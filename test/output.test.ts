@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
-import sinon, { SinonSpyCall } from 'sinon'
+import sinon from 'sinon'
 import t from 'tap'
 import { NSedError } from '../src/models'
 import { handleError, showOutput } from '../src/output'
-
-type Test = typeof t
 
 function createError(code: string, message: string = 'MESSAGE'): NSedError {
   const error = new NSedError(message)
@@ -13,7 +11,7 @@ function createError(code: string, message: string = 'MESSAGE'): NSedError {
   return error
 }
 
-t.test('NSed output', (t: Test) => {
+t.test('NSed output', t => {
   const logStub = sinon.stub(console, 'log')
   const errorStub = sinon.stub(console, 'error')
   const processStub = sinon.stub(process, 'exit')
@@ -24,8 +22,8 @@ t.test('NSed output', (t: Test) => {
     processStub.restore()
   })
 
-  t.test('NSedError', (t: Test) => {
-    t.test('should set the right code', (t: Test) => {
+  t.test('NSedError', t => {
+    t.test('should set the right code', t => {
       const error = new NSedError('REASON')
       t.equal(error.message, 'REASON')
       t.equal(error.code, 'ENSED')
@@ -36,8 +34,8 @@ t.test('NSed output', (t: Test) => {
     t.end()
   })
 
-  t.test('.handleError', (t: Test) => {
-    t.test('should correctly handle errors', (t: Test) => {
+  t.test('.handleError', t => {
+    t.test('should correctly handle errors', t => {
       errorStub.reset()
       processStub.reset()
 
@@ -61,14 +59,14 @@ t.test('NSed output', (t: Test) => {
     t.end()
   })
 
-  t.test('.showOutput', (t: Test) => {
-    t.test('should return the right output', (t: Test) => {
-      showOutput(undefined) // eslint-disable-line no-undefined
+  t.test('.showOutput', t => {
+    t.test('should return the right output', t => {
+      showOutput(undefined)
       showOutput(null)
       showOutput([1, 2])
 
       t.same(
-        logStub.getCalls().map((m: SinonSpyCall) => m.args),
+        logStub.getCalls().map(m => m.args),
         [['<undefined>'], ['<null>'], ['1,2']]
       )
 
