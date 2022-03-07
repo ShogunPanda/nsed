@@ -26,6 +26,7 @@ export class NSedError extends Error {
 
   constructor(message: string) {
     super(message)
+    this.name = 'NSedError'
     this.code = 'ENSED'
   }
 }

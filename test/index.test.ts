@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
-import { readFileSync } from 'fs'
+import { readFileSync } from 'node:fs'
 import sinon from 'sinon'
 import t from 'tap'
-import { execute, processData } from '../src/index'
-import { NSedError } from '../src/models'
-import { requireModule } from '../src/operations'
+import { execute, processData } from '../src/index.js'
+import { NSedError } from '../src/models.js'
+import { requireModule } from '../src/operations.js'
 
 const packageInfo = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf-8'))
-const dataFile = new URL('./fixtures/data.txt', import.meta.url).toString().replace('file://', '')
+const dataFile = new URL('fixtures/data.txt', import.meta.url).toString().replace('file://', '')
 
 t.test('NSed execution', t => {
   const logStub = sinon.stub(console, 'log')

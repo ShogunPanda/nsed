@@ -2,8 +2,8 @@
 
 import sinon from 'sinon'
 import t from 'tap'
-import { NSedError } from '../src/models'
-import { executeCommands, parseCommand, requireModule } from '../src/operations'
+import { NSedError } from '../src/models.js'
+import { executeCommands, parseCommand, requireModule } from '../src/operations.js'
 
 t.test('NSed operations', t => {
   const logStub = sinon.stub(console, 'log')
@@ -60,7 +60,7 @@ t.test('NSed operations', t => {
       const fileName = import.meta.url.toString().replace('file://', '')
       const imported = await parseCommand(
         'function',
-        new URL('./fixtures/function.cjs', import.meta.url).toString().replace('file://', '')
+        new URL('fixtures/function.cjs', import.meta.url).toString().replace('file://', '')
       )
       t.equal(imported.type, 'function')
       t.type(imported.command, Function)

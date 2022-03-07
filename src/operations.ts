@@ -1,6 +1,6 @@
-import { basename, resolve } from 'path'
-import { Command, CommandType, ImportedFunction, NSedError } from './models'
-import { showOutput } from './output'
+import { basename, resolve } from 'node:path'
+import { Command, CommandType, ImportedFunction, NSedError } from './models.js'
+import { showOutput } from './output.js'
 
 export async function parseCommand(type: CommandType, command: string): Promise<Command> {
   // Parse the command
@@ -29,7 +29,7 @@ export async function parseCommand(type: CommandType, command: string): Promise<
     command = `$data${command}`
   } else if (command.startsWith('/')) {
     command = `$data.toString().match(${command})`
-  } else if (command.match(/^\$\d+$/)) {
+  } else if (/^\$\d+$/.test(command)) {
     command = `RegExp.${command}`
   }
 
@@ -40,12 +40,12 @@ export async function requireModule(modulePath: string): Promise<void> {
   // Camelcase the module
   const moduleName = basename(modulePath)
     .toLowerCase()
-    // eslint-disable-next-line no-useless-escape
-    .replace(/(?:[\/-_\.])([a-z0-9])/, (_, t) => t.toUpperCase())
+
+    .replace(/[./-_]([\da-z])/, (_, t) => t.toUpperCase())
 
   try {
     Object.defineProperty(globalThis, moduleName, { value: await import(modulePath) })
-  } catch (e) {
+  } catch {
     throw new NSedError(`Cannot find module "${modulePath}".`)
   }
 }

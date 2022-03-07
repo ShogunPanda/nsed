@@ -1,11 +1,11 @@
 import { Command as Commander } from 'commander'
-import { createReadStream, ReadStream } from 'fs'
 import getStream from 'get-stream'
+import { createReadStream, ReadStream } from 'node:fs'
 import pump from 'pump'
 import split2 from 'split2'
-import { Command, CommandType, PackageInfo, PromiseResolver } from './models'
-import { executeCommands, parseCommand, requireModule } from './operations'
-import { handleError } from './output'
+import { Command, CommandType, PackageInfo, PromiseResolver } from './models.js'
+import { executeCommands, parseCommand, requireModule } from './operations.js'
+import { handleError } from './output.js'
 
 async function addCommand(commands: Array<Command>, type: CommandType, command: string): Promise<void> {
   commands.push(await parseCommand(type, command))
@@ -30,8 +30,8 @@ export async function processData(
 
     try {
       contents = await getStream(stream)
-    } catch (e) {
-      handleError(e, input)
+    } catch (error) {
+      handleError(error, input)
     }
 
     return executeCommands(contents, 0, commands)
@@ -66,8 +66,8 @@ export async function processData(
 
     // Start processing
     pipe.resume()
-  }).catch(e => {
-    handleError(e, input)
+  }).catch(error => {
+    handleError(error, input)
   })
 }
 
@@ -120,8 +120,8 @@ export function execute(args: Array<string>, { version, description }: PackageIn
   const { input, encoding, whole } = cli.opts()
 
   processData(input, encoding, whole, commands)
-    .catch(e => {
-      handleError(e, input, true)
+    .catch(error => {
+      handleError(error, input, true)
     })
     .finally(promiseResolve!)
 

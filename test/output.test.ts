@@ -2,8 +2,8 @@
 
 import sinon from 'sinon'
 import t from 'tap'
-import { NSedError } from '../src/models'
-import { handleError, showOutput } from '../src/output'
+import { NSedError } from '../src/models.js'
+import { handleError, showOutput } from '../src/output.js'
 
 function createError(code: string, message: string = 'MESSAGE'): NSedError {
   const error = new NSedError(message)
