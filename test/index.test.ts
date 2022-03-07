@@ -7,7 +7,7 @@ import { execute, processData } from '../src/index.js'
 import { NSedError } from '../src/models.js'
 import { requireModule } from '../src/operations.js'
 
-const packageInfo = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf-8'))
+const packageInfo = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'))
 const dataFile = new URL('fixtures/data.txt', import.meta.url).toString().replace('file://', '')
 
 t.test('NSed execution', t => {
@@ -27,7 +27,7 @@ t.test('NSed execution', t => {
       t.test('should open the file and execute command', async t => {
         logStub.reset()
 
-        await processData(dataFile, 'utf-8', true, [
+        await processData(dataFile, 'utf8', true, [
           { type: 'command', command: 'crypto.createHash("sha1").update($data).digest("hex")' }
         ])
 
@@ -39,7 +39,7 @@ t.test('NSed execution', t => {
 
       t.test('should handle open errors', async t => {
         await t.rejects(
-          processData('/not-existing', 'utf-8', true, [{ type: 'command', command: '$data' }]),
+          processData('/not-existing', 'utf8', true, [{ type: 'command', command: '$data' }]),
           new NSedError('Cannot open file /not-existing: file not found.')
         )
       })
@@ -51,7 +51,7 @@ t.test('NSed execution', t => {
       t.test('should open the file and execute commands, streaming them line by line', async t => {
         logStub.reset()
 
-        await processData(dataFile, 'utf-8', false, [
+        await processData(dataFile, 'utf8', false, [
           { type: 'command', command: 'crypto.createHash("sha1").update($data).digest("hex")' }
         ])
 
@@ -69,7 +69,7 @@ t.test('NSed execution', t => {
 
       t.test('should handle open errors', async t => {
         await t.rejects(
-          processData('/not-existing', 'utf-8', false, [{ type: 'command', command: '$data' }]),
+          processData('/not-existing', 'utf8', false, [{ type: 'command', command: '$data' }]),
           new NSedError('Cannot open file /not-existing: file not found.')
         )
       })
