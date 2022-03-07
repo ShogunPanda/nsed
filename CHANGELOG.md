@@ -1,3 +1,7 @@
+### 2022-03-07 / 3.0.9
+
+- chore: Updated dependencies.
+
 ### 2022-03-07 / 3.0.8
 
 - chore: Updated dependencies.
