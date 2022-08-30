@@ -50,10 +50,10 @@
     "split2": "^4.1.0"
   },
   "devDependencies": {
-    "@cowtech/eslint-config": "^8.7.1",
+    "@cowtech/eslint-config": "^8.7.2",
     "@swc/cli": "^0.1.57",
-    "@swc/core": "^1.2.244",
-    "@types/node": "^18.7.13",
+    "@swc/core": "^1.2.245",
+    "@types/node": "^18.7.14",
     "@types/pump": "^1.1.1",
     "@types/sinon": "^10.0.13",
     "@types/split2": "^3.2.1",
