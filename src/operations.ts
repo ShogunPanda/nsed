@@ -50,7 +50,7 @@ export async function requireModule(modulePath: string): Promise<void> {
   }
 }
 
-export async function executeCommands($data: string, $index: number, commands: Array<Command>): Promise<void> {
+export async function executeCommands($data: string, $index: number, commands: Command[]): Promise<void> {
   // Apply all commands
   for (const cmd of commands) {
     const { type, command } = cmd

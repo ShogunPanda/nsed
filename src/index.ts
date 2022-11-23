@@ -7,7 +7,7 @@ import { Command, CommandType, PackageInfo, PromiseResolver } from './models.js'
 import { executeCommands, parseCommand, requireModule } from './operations.js'
 import { handleError } from './output.js'
 
-async function addCommand(commands: Array<Command>, type: CommandType, command: string): Promise<void> {
+async function addCommand(commands: Command[], type: CommandType, command: string): Promise<void> {
   commands.push(await parseCommand(type, command))
 }
 
@@ -15,7 +15,7 @@ export async function processData(
   input: string,
   encoding: BufferEncoding,
   whole: boolean,
-  commands: Array<Command>
+  commands: Command[]
 ): Promise<void> {
   let stream: ReadStream = process.stdin as unknown as ReadStream
 
@@ -71,7 +71,7 @@ export async function processData(
   })
 }
 
-export function execute(args: Array<string>, { version, description }: PackageInfo): Promise<void> {
+export function execute(args: string[], { version, description }: PackageInfo): Promise<void> {
   let promiseResolve: PromiseResolver
 
   const promise = new Promise<void>(resolve => {
@@ -79,7 +79,7 @@ export function execute(args: Array<string>, { version, description }: PackageIn
   })
 
   const cli = new Commander()
-  const commands: Array<Command> = []
+  const commands: Command[] = []
 
   // Parse input
   cli
