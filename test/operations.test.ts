@@ -1,19 +1,11 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
-import sinon from 'sinon'
 import t from 'tap'
 import { NSedError } from '../src/models.js'
 import { executeCommands, parseCommand, requireModule } from '../src/operations.js'
 
 t.test('NSed operations', t => {
-  const logStub = sinon.stub(console, 'log')
-  const errorStub = sinon.stub(console, 'error')
   requireModule('crypto')
-
-  t.teardown(() => {
-    logStub.restore()
-    errorStub.restore()
-  })
 
   t.test('parseCommand', t => {
     t.test('should return the right command', async t => {
@@ -87,51 +79,48 @@ t.test('NSed operations', t => {
 
   t.test('.executeCommand', t => {
     t.test('should correctly execute commands', async t => {
-      logStub.reset()
+      const logCalls = t.capture(console, 'log')
 
       await executeCommands('abc', 0, [
         { type: 'command', command: '$data[1]' },
         { type: 'command', command: '$data + $index' }
       ])
 
-      t.equal(logStub.firstCall.args[0], 'b0')
+      t.equal(logCalls()[0].args[0], 'b0')
     })
 
     t.test('should correctly execute functions', async t => {
-      logStub.reset()
+      const logCalls = t.capture(console, 'log')
 
       await executeCommands('abc', 0, [
         { type: 'function', command: $data => $data[1] },
         { type: 'command', command: '$data + $index' }
       ])
 
-      t.equal(logStub.firstCall.args[0], 'b0')
+      t.equal(logCalls()[0].args[0], 'b0')
     })
 
     t.test('should correctly handle filters', async t => {
-      logStub.reset()
+      const logCalls = t.capture(console, 'log')
 
       await executeCommands('abc', 1, [{ type: 'filter', command: '$index < 2' }])
-      t.equal(logStub.firstCall.args[0], 'abc')
+      t.equal(logCalls()[0].args[0], 'abc')
 
-      logStub.reset()
       await executeCommands('abc', 3, [{ type: 'filter', command: '$index < 2' }])
-      t.equal(logStub.callCount, 0)
+      t.equal(logCalls().length, 0)
     })
 
     t.test('should correctly handle reverse filters', async t => {
-      logStub.reset()
+      const logCalls = t.capture(console, 'log')
 
       await executeCommands('abc', 1, [{ type: 'reverseFilter', command: '$index < 2' }])
-      t.equal(logStub.callCount, 0)
+      t.equal(logCalls().length, 0)
 
       await executeCommands('abc', 3, [{ type: 'reverseFilter', command: '$index < 2' }])
-      t.equal(logStub.firstCall.args[0], 'abc')
+      t.equal(logCalls()[0].args[0], 'abc')
     })
 
     t.test('should handle errors', t => {
-      errorStub.reset()
-
       return t.rejects(
         executeCommands('abc', 1, [{ type: 'command', command: '$data()' }]),
         new NSedError('Invalid command "$data()": [TypeError] $data is not a function.')

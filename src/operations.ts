@@ -1,5 +1,5 @@
 import { basename, resolve } from 'node:path'
-import { Command, CommandType, ImportedFunction, NSedError } from './models.js'
+import { NSedError, type Command, type CommandType, type ImportedFunction } from './models.js'
 import { showOutput } from './output.js'
 
 export async function parseCommand(type: CommandType, command: string): Promise<Command> {
@@ -45,6 +45,7 @@ export async function requireModule(modulePath: string): Promise<void> {
 
   try {
     Object.defineProperty(globalThis, moduleName, { value: await import(modulePath) })
+    resolve()
   } catch {
     throw new NSedError(`Cannot find module "${modulePath}".`)
   }
@@ -83,5 +84,5 @@ export async function executeCommands($data: string, $index: number, commands: C
     }
   }
 
-  return showOutput($data)
+  showOutput($data)
 }

@@ -1,11 +1,19 @@
 import { Command as Commander } from 'commander'
-import getStream from 'get-stream'
-import { createReadStream, ReadStream } from 'node:fs'
+import { createReadStream, type ReadStream } from 'node:fs'
 import pump from 'pump'
 import split2 from 'split2'
-import { Command, CommandType, PackageInfo, PromiseResolver } from './models.js'
+import { createPromiseForCallbacks, type Command, type CommandType, type PackageInfo } from './models.js'
 import { executeCommands, parseCommand, requireModule } from './operations.js'
 import { handleError } from './output.js'
+
+function parseOptionAsync(promises: Promise<void>[], fn: (...args: any[]) => Promise<void>, ...args: any[]): void {
+  const [promise, resolve, reject] = createPromiseForCallbacks()
+
+  promises.push(promise)
+  fn(...args)
+    .then(resolve)
+    .catch(reject)
+}
 
 async function addCommand(commands: Command[], type: CommandType, command: string): Promise<void> {
   commands.push(await parseCommand(type, command))
@@ -29,7 +37,9 @@ export async function processData(
     let contents = ''
 
     try {
-      contents = await getStream(stream)
+      for await (const chunk of stream) {
+        contents += chunk.toString(encoding)
+      }
     } catch (error) {
       handleError(error, input)
     }
@@ -71,18 +81,13 @@ export async function processData(
   })
 }
 
-export function execute(args: string[], { version, description }: PackageInfo): Promise<void> {
-  let promiseResolve: PromiseResolver
-
-  const promise = new Promise<void>(resolve => {
-    promiseResolve = resolve
-  })
-
+export async function execute(args: string[], { version, description }: PackageInfo): Promise<void> {
   const cli = new Commander()
   const commands: Command[] = []
+  const promises: Promise<void>[] = []
 
   // Parse input
-  cli
+  await cli
     .storeOptionsAsProperties(false)
     .version(version, '-v, --version', 'Shows the version.')
     .usage('[options]')
@@ -92,38 +97,37 @@ export function execute(args: string[], { version, description }: PackageInfo): 
     .option(
       '-r, --require <MODULE>',
       'Require a module before processing. The module will be available with its name camelcased.',
-      requireModule
+      parseOptionAsync.bind(null, promises, requireModule)
     )
     .option(
       '-c, --command <COMMAND>',
       'A JS expression to evaluate. $data and $index represent current data and line number.',
-      addCommand.bind(null, commands, 'command')
+      parseOptionAsync.bind(null, promises, addCommand, commands, 'command')
     )
     .option(
       '-s, --source <SOURCE>',
       'File that exports a Javascript function to process data.',
-      addCommand.bind(null, commands, 'function')
+      parseOptionAsync.bind(null, promises, addCommand, commands, 'function')
     )
     .option(
       '-f, --filter <COMMAND>',
       'A JS expression or regexp to filter: Truthy values will cause current line to be discarded.',
-      addCommand.bind(null, commands, 'filter')
+      parseOptionAsync.bind(null, promises, addCommand, commands, 'filter')
     )
     .option(
       '-F, --reverse-filter <COMMAND>',
       'A JS expression or regexp to filter: Falsy values will cause current line to be discarded.',
-      addCommand.bind(null, commands, 'reverseFilter')
+      parseOptionAsync.bind(null, promises, addCommand, commands, 'reverseFilter')
     )
     .option('-e, --encoding <ENCODING>', 'The encoding to use.', 'utf8')
-    .parse(args)
+    .parseAsync(args)
 
+  await Promise.all(promises)
   const { input, encoding, whole } = cli.opts()
 
-  processData(input, encoding, whole, commands)
-    .catch(error => {
-      handleError(error, input, true)
-    })
-    .finally(promiseResolve!)
-
-  return promise
+  try {
+    await processData(input, encoding, whole, commands)
+  } catch (error) {
+    handleError(error, input, true)
+  }
 }

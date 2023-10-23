@@ -1,5 +1,5 @@
-export type PromiseResolver = (value?: any) => void
-export type PromiseRejecter = (error: Error) => void
+export type PromiseResolver<T = any> = (value: T) => void
+export type PromiseRejecter<E = Error> = (err: E) => void
 
 export interface Args {
   input: string
@@ -29,4 +29,16 @@ export class NSedError extends Error {
     this.name = 'NSedError'
     this.code = 'ENSED'
   }
+}
+
+export function createPromiseForCallbacks<T = void, E = Error>(): [Promise<T>, PromiseResolver<T>, PromiseRejecter<E>] {
+  let resolver: PromiseResolver<T>
+  let rejecter: PromiseRejecter<E>
+
+  const promise = new Promise<T>((resolve, reject) => {
+    resolver = resolve
+    rejecter = reject
+  })
+
+  return [promise, resolver!, rejecter!]
 }
