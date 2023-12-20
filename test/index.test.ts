@@ -3,10 +3,10 @@
 import { readFileSync } from 'node:fs'
 import t from 'tap'
 import { execute, processData } from '../src/index.js'
-import { NSedError } from '../src/models.js'
+import { NSedError, type PackageInfo } from '../src/models.js'
 import { requireModule } from '../src/operations.js'
 
-const packageInfo = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'))
+const packageInfo: PackageInfo = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'))
 const dataFile = new URL('fixtures/data.txt', import.meta.url).toString().replace('file://', '')
 
 t.test('NSed execution', async t => {

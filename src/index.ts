@@ -10,6 +10,7 @@ function parseOptionAsync(promises: Promise<void>[], fn: (...args: any[]) => Pro
   const [promise, resolve, reject] = createPromiseForCallbacks()
 
   promises.push(promise)
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   fn(...args)
     .then(resolve)
     .catch(reject)
@@ -41,7 +42,7 @@ export async function processData(
         contents += chunk.toString(encoding)
       }
     } catch (error) {
-      handleError(error, input)
+      handleError(error as Error, input)
     }
 
     return executeCommands(contents, 0, commands)
@@ -77,7 +78,7 @@ export async function processData(
     // Start processing
     pipe.resume()
   }).catch(error => {
-    handleError(error, input)
+    handleError(error as Error, input)
   })
 }
 
@@ -126,8 +127,8 @@ export async function execute(args: string[], { version, description }: PackageI
   const { input, encoding, whole } = cli.opts()
 
   try {
-    await processData(input, encoding, whole, commands)
+    await processData(input as string, encoding as BufferEncoding, whole as boolean, commands)
   } catch (error) {
-    handleError(error, input, true)
+    handleError(error as Error, input as string, true)
   }
 }
