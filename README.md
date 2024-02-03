@@ -21,7 +21,7 @@ find test -type f | nsed -r fs -r crypto -c 'fs.readFileSync($data, "utf8")' -c 
 
 To install, simply use npm or yarn:
 
-```
+```bash
 npm install -g nsed
 ```
 
