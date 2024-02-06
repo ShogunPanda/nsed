@@ -1,50 +1,51 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
-import t from 'tap'
+import { deepStrictEqual, rejects } from 'node:assert'
+import { test } from 'node:test'
 import { NSedError } from '../src/models.js'
 import { executeCommands, parseCommand, requireModule } from '../src/operations.js'
 
-t.test('NSed operations', t => {
+test('NSed operations', async () => {
   requireModule('crypto')
 
-  t.test('parseCommand', t => {
-    t.test('should return the right command', async t => {
-      t.same(await parseCommand('command', '.foo'), {
+  await test('parseCommand', async () => {
+    await test('should return the right command', async () => {
+      deepStrictEqual(await parseCommand('command', '.foo'), {
         type: 'command',
         command: '$data.foo'
       })
 
-      t.same(await parseCommand('command', '[2]'), {
+      deepStrictEqual(await parseCommand('command', '[2]'), {
         type: 'command',
         command: '$data[2]'
       })
 
-      t.same(await parseCommand('command', '[whatever]'), {
+      deepStrictEqual(await parseCommand('command', '[whatever]'), {
         type: 'command',
         command: '$data[whatever]'
       })
 
-      t.same(await parseCommand('command', '/^\\d/'), {
+      deepStrictEqual(await parseCommand('command', '/^\\d/'), {
         type: 'command',
         command: '$data.toString().match(/^\\d/)'
       })
 
-      t.same(await parseCommand('command', '$1'), {
+      deepStrictEqual(await parseCommand('command', '$1'), {
         type: 'command',
         command: 'RegExp.$1'
       })
 
-      t.same(await parseCommand('command', 'foo'), {
+      deepStrictEqual(await parseCommand('command', 'foo'), {
         type: 'command',
         command: 'foo'
       })
 
-      t.same(await parseCommand('filter', '$1'), {
+      deepStrictEqual(await parseCommand('filter', '$1'), {
         type: 'filter',
         command: 'RegExp.$1'
       })
 
-      t.same(await parseCommand('reverseFilter', '$1'), {
+      deepStrictEqual(await parseCommand('reverseFilter', '$1'), {
         type: 'reverseFilter',
         command: 'RegExp.$1'
       })
@@ -54,81 +55,79 @@ t.test('NSed operations', t => {
         'function',
         new URL('fixtures/function.cjs', import.meta.url).toString().replace('file://', '')
       )
-      t.equal(imported.type, 'function')
-      t.type(imported.command, Function)
+      deepStrictEqual(imported.type, 'function')
+      deepStrictEqual(typeof imported.command, 'function')
 
-      t.rejects(parseCommand('function', fileName), new NSedError(`File "${fileName}" must export a function.`))
+      rejects(parseCommand('function', fileName), new NSedError(`File "${fileName}" must export a function.`))
 
-      t.rejects(parseCommand('function', '/foo'), new NSedError('Cannot require file "/foo".'))
+      rejects(parseCommand('function', '/foo'), new NSedError('Cannot require file "/foo".'))
     })
-
-    t.end()
   })
 
-  t.test('.requireModule', t => {
-    t.test('should require a module and make it available in the global scope', async t => {
-      t.type((globalThis as any).stringDecoder, 'undefined')
+  await test('.requireModule', async () => {
+    await test('should require a module and make it available in the global scope', async () => {
+      deepStrictEqual(typeof (globalThis as any).stringDecoder, 'undefined')
       await requireModule('string_decoder')
-      t.type((globalThis as any).stringDecoder, 'object')
+      deepStrictEqual(typeof (globalThis as any).stringDecoder, 'object')
 
-      t.rejects(requireModule('foo'), new NSedError('Cannot find module "foo".'))
+      rejects(requireModule('foo'), new NSedError('Cannot find module "foo".'))
     })
-
-    t.end()
   })
 
-  t.test('.executeCommand', t => {
-    t.test('should correctly execute commands', async t => {
-      const logCalls = t.capture(console, 'log')
+  await test('.executeCommand', async () => {
+    await test('should correctly execute commands', async t => {
+      const consoleLog = t.mock.method(console, 'log')
+      consoleLog.mock.mockImplementation(() => {})
 
       await executeCommands('abc', 0, [
         { type: 'command', command: '$data[1]' },
         { type: 'command', command: '$data + $index' }
       ])
 
-      t.equal(logCalls()[0].args[0], 'b0')
+      deepStrictEqual(consoleLog.mock.calls[0].arguments[0], 'b0')
     })
 
-    t.test('should correctly execute functions', async t => {
-      const logCalls = t.capture(console, 'log')
+    await test('should correctly execute functions', async t => {
+      const consoleLog = t.mock.method(console, 'log')
+      consoleLog.mock.mockImplementation(() => {})
 
       await executeCommands('abc', 0, [
         { type: 'function', command: $data => $data[1] },
         { type: 'command', command: '$data + $index' }
       ])
 
-      t.equal(logCalls()[0].args[0], 'b0')
+      deepStrictEqual(consoleLog.mock.calls[0].arguments[0], 'b0')
     })
 
-    t.test('should correctly handle filters', async t => {
-      const logCalls = t.capture(console, 'log')
+    await test('should correctly handle filters', async t => {
+      const consoleLog = t.mock.method(console, 'log')
+      consoleLog.mock.mockImplementation(() => {})
 
       await executeCommands('abc', 1, [{ type: 'filter', command: '$index < 2' }])
-      t.equal(logCalls()[0].args[0], 'abc')
+      deepStrictEqual(consoleLog.mock.calls[0].arguments[0], 'abc')
 
+      consoleLog.mock.resetCalls()
       await executeCommands('abc', 3, [{ type: 'filter', command: '$index < 2' }])
-      t.equal(logCalls().length, 0)
+      deepStrictEqual(consoleLog.mock.callCount(), 0)
     })
 
-    t.test('should correctly handle reverse filters', async t => {
-      const logCalls = t.capture(console, 'log')
+    await test('should correctly handle reverse filters', async t => {
+      const consoleLog = t.mock.method(console, 'log')
+      consoleLog.mock.mockImplementation(() => {})
 
       await executeCommands('abc', 1, [{ type: 'reverseFilter', command: '$index < 2' }])
-      t.equal(logCalls().length, 0)
+      deepStrictEqual(consoleLog.mock.callCount(), 0)
 
+      consoleLog.mock.resetCalls()
       await executeCommands('abc', 3, [{ type: 'reverseFilter', command: '$index < 2' }])
-      t.equal(logCalls()[0].args[0], 'abc')
+      deepStrictEqual(consoleLog.mock.calls[0].arguments[0], 'abc')
     })
 
-    t.test('should handle errors', t => {
-      return t.rejects(
+    await test('should handle errors', () => {
+      return rejects(
         executeCommands('abc', 1, [{ type: 'command', command: '$data()' }]),
         new NSedError('Invalid command "$data()": [TypeError] $data is not a function.')
       )
     })
-
-    t.end()
   })
-
-  t.end()
 })
