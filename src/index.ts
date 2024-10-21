@@ -10,7 +10,7 @@ function parseOptionAsync(promises: Promise<void>[], fn: (...args: any[]) => Pro
   const [promise, resolve, reject] = createPromiseForCallbacks()
 
   promises.push(promise)
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
   fn(...args)
     .then(resolve)
     .catch(reject)

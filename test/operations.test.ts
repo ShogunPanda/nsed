@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
-
 import { deepStrictEqual, rejects } from 'node:assert'
 import { test } from 'node:test'
 import { NSedError } from '../src/models.js'
