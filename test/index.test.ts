@@ -1,14 +1,16 @@
 import { deepStrictEqual, rejects } from 'node:assert'
 import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { test } from 'node:test'
-import { execute, processData } from '../src/index.js'
-import { NSedError, type PackageInfo } from '../src/models.js'
-import { requireModule } from '../src/operations.js'
+import { execute, processData } from '../src/index.ts'
+import { NSedError, type PackageInfo } from '../src/models.ts'
+import { requireModule } from '../src/operations.ts'
 
 const packageInfo: PackageInfo = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'))
-const dataFile = new URL('fixtures/data.txt', import.meta.url).toString().replace('file://', '')
 
 test('NSed execution', async () => {
+  const dataFile = resolve(import.meta.dirname, 'fixtures/data.txt')
+
   await requireModule('crypto')
 
   await test('.processData', async () => {
@@ -26,7 +28,13 @@ test('NSed execution', async () => {
 
         deepStrictEqual(
           consoleLog.mock.calls.map(c => c.arguments),
-          [['8601223fcd56ed69a21fcf643f7d0b9eba4ab64f']]
+          [
+            [
+              process.platform === 'win32'
+                ? 'a5c91d3cc789776d859161bffc9965054cf924f3'
+                : '8601223fcd56ed69a21fcf643f7d0b9eba4ab64f'
+            ]
+          ]
         )
       })
 
@@ -104,7 +112,13 @@ test('NSed execution', async () => {
 
       deepStrictEqual(
         consoleLog.mock.calls.map(c => c.arguments),
-        [['8601223fcd56ed69a21fcf643f7d0b9eba4ab64f']]
+        [
+          [
+            process.platform === 'win32'
+              ? 'a5c91d3cc789776d859161bffc9965054cf924f3'
+              : '8601223fcd56ed69a21fcf643f7d0b9eba4ab64f'
+          ]
+        ]
       )
     })
 
@@ -148,7 +162,7 @@ test('NSed execution', async () => {
 
       deepStrictEqual(
         consoleLog.mock.calls.map(c => c.arguments),
-        [['1\n2\n3\n4\n5']]
+        [[['1', '2', '3', '4', '5'].join(process.platform === 'win32' ? '\r\n' : '\n')]]
       )
     })
 
@@ -189,9 +203,15 @@ test('NSed execution', async () => {
 
       await execute(`node index.js -i ${dataFile} -r path -c path.resolve('/a',$data)`.split(' '), packageInfo)
 
+      const windowsDrive = import.meta.filename.charAt(0)
+      const expected = []
+      for (let i = 1; i <= 5; i++) {
+        expected.push([process.platform === 'win32' ? `${windowsDrive}:\\a\\${i}` : `/a/${i}`])
+      }
+
       deepStrictEqual(
         consoleLog.mock.calls.map(c => c.arguments),
-        [['/a/1'], ['/a/2'], ['/a/3'], ['/a/4'], ['/a/5']]
+        expected
       )
     })
   })

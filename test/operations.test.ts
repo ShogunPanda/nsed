@@ -1,7 +1,8 @@
 import { deepStrictEqual, rejects } from 'node:assert'
+import { resolve } from 'node:path'
 import { test } from 'node:test'
-import { NSedError } from '../src/models.js'
-import { executeCommands, parseCommand, requireModule } from '../src/operations.js'
+import { NSedError } from '../src/models.ts'
+import { executeCommands, parseCommand, requireModule } from '../src/operations.ts'
 
 test('NSed operations', async () => {
   requireModule('crypto')
@@ -48,15 +49,14 @@ test('NSed operations', async () => {
         command: 'RegExp.$1'
       })
 
-      const fileName = import.meta.url.toString().replace('file://', '')
-      const imported = await parseCommand(
-        'function',
-        new URL('fixtures/function.cjs', import.meta.url).toString().replace('file://', '')
-      )
+      const imported = await parseCommand('function', resolve(import.meta.dirname, 'fixtures/function.cjs'))
       deepStrictEqual(imported.type, 'function')
       deepStrictEqual(typeof imported.command, 'function')
 
-      rejects(parseCommand('function', fileName), new NSedError(`File "${fileName}" must export a function.`))
+      rejects(
+        parseCommand('function', import.meta.filename),
+        new NSedError(`File "${import.meta.filename}" must export a function.`)
+      )
 
       rejects(parseCommand('function', '/foo'), new NSedError('Cannot require file "/foo".'))
     })

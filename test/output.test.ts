@@ -1,7 +1,7 @@
 import { deepStrictEqual, throws } from 'node:assert'
 import { test } from 'node:test'
-import { NSedError } from '../src/models.js'
-import { handleError, showOutput } from '../src/output.js'
+import { NSedError } from '../src/models.ts'
+import { handleError, showOutput } from '../src/output.ts'
 
 function createError(code: string, message: string = 'MESSAGE'): NSedError {
   const error = new NSedError(message)

@@ -1,4 +1,4 @@
-import { NSedError } from './models.js'
+import { NSedError } from './models.ts'
 
 export function handleError(error: NSedError | Error, inputPath?: string, fatal: boolean = false): void {
   let finalMessage = null

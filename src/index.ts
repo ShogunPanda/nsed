@@ -2,9 +2,9 @@ import { Command as Commander } from 'commander'
 import { createReadStream, type ReadStream } from 'node:fs'
 import pump from 'pump'
 import split2 from 'split2'
-import { createPromiseForCallbacks, type Command, type CommandType, type PackageInfo } from './models.js'
-import { executeCommands, parseCommand, requireModule } from './operations.js'
-import { handleError } from './output.js'
+import { createPromiseForCallbacks, type Command, type CommandType, type PackageInfo } from './models.ts'
+import { executeCommands, parseCommand, requireModule } from './operations.ts'
+import { handleError } from './output.ts'
 
 function parseOptionAsync(promises: Promise<void>[], fn: (...args: any[]) => Promise<void>, ...args: any[]): void {
   const [promise, resolve, reject] = createPromiseForCallbacks()
@@ -53,7 +53,7 @@ export async function processData(
     let index = 0
 
     // Split the stream
-    const pipe = pump(stream, split2('\n'), err => {
+    const pipe = pump(stream, split2(/\r?\n/), err => {
       if (err) {
         reject(err)
       }

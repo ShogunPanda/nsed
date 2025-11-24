@@ -1,12 +1,13 @@
 import { basename, resolve } from 'node:path'
-import { NSedError, type Command, type CommandType, type ImportedFunction } from './models.js'
-import { showOutput } from './output.js'
+import { pathToFileURL } from 'node:url'
+import { NSedError, type Command, type CommandType, type ImportedFunction } from './models.ts'
+import { showOutput } from './output.ts'
 
 export async function parseCommand(type: CommandType, command: string): Promise<Command> {
   // Parse the command
   if (type === 'function') {
     try {
-      let commandFunction = await import(resolve(process.cwd(), command))
+      let commandFunction = await import(pathToFileURL(resolve(process.cwd(), command)).toString())
 
       if (commandFunction.default) {
         // CJS/MJS inteoperability
