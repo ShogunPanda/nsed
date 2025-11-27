@@ -1,9 +1,10 @@
+import type { PackageInfo } from '../src/models.ts'
 import { deepStrictEqual, rejects } from 'node:assert'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { test } from 'node:test'
 import { execute, processData } from '../src/index.ts'
-import { NSedError, type PackageInfo } from '../src/models.ts'
+import { NSedError } from '../src/models.ts'
 import { requireModule } from '../src/operations.ts'
 
 const packageInfo: PackageInfo = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'))

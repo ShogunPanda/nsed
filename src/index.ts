@@ -1,5 +1,5 @@
-import { Command as Commander } from 'commander'
 import { createReadStream, type ReadStream } from 'node:fs'
+import { Command as Commander } from 'commander'
 import pump from 'pump'
 import split2 from 'split2'
 import { createPromiseForCallbacks, type Command, type CommandType, type PackageInfo } from './models.ts'
