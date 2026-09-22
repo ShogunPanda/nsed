@@ -1,5 +1,7 @@
 # nsed
 
+## END OF DEVELOPMENT NOTICE - This software has been discontinued
+
 [![Version](https://img.shields.io/npm/v/nsed.svg)](https://npm.im/nsed)
 [![Dependencies](https://img.shields.io/librariesio/release/npm/nsed)](https://libraries.io/npm/nsed)
 [![Build](https://github.com/ShogunPanda/nsed/workflows/CI/badge.svg)](https://github.com/ShogunPanda/nsed/actions?query=workflow%3ACI)
